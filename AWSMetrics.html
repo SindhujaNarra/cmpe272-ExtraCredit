@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+ <head>
+
+<meta charset="ISO-8859-1" http-equiv="refresh">
+<title>Dashboard</title>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+<script type="text/javascript" src="http://canvasjs.com/assets/script/canvasjs.min.js"></script>
+<script type="text/javascript">
+
+//window.onload=getCPUChart;
+
+function getCPUChart(){
+
+		var xhr = new XMLHttpRequest();
+    var uri = "http://localhost:8080/cpu";
+
+
+		xhr.open("GET", uri, true);
+		xhr.setRequestHeader("Accept", "application/json");
+		xhr.send();
+
+		xhr.onreadystatechange = function() {
+			if (xhr.readyState == 4 && xhr.status == 200) {
+				showCPUChart(xhr);
+			}
+		}
+	}
+
+	function showCPUChart(xhr) {
+		if (xhr.readyState == 4 && xhr.status == 200) {
+
+			var jsonObjstr = xhr.responseText;
+			var jsonObj = JSON.parse(jsonObjstr);
+
+			console.log(jsonObjstr)
+			console.log(jsonObj[0].Datapoints[0].Timestamp)
+
+
+			var dps = [];
+
+			for ( var i = 0; i < jsonObj.length; i++) {
+				dps.push({
+					axisX:{
+						x : jsonObj[i].Datapoints[0].Timestamp,
+
+					},
+					y : jsonObj[i].Datapoints[0].Average,
+					label: jsonObj[i].Datapoints[0].Timestamp,
+					legendText : "InstanceID: "+jsonObj[i].InstanceId,
+					indexLabelFontSize: 12,
+					indexLabel : "InstID: "+jsonObj[i].InstanceId
+
+				});
+			}
+
+			var chart = new CanvasJS.Chart("chartContainer", {
+				title : {
+					text : "CPU Utilization",
+
+				},
+				legend : {
+				    fontColor: "black",
+
+				 },
+				 axisX:{
+						title: "time",
+						gridThickness: 2,
+						interval:1,
+						intervalType: "hour",
+						labelAngle: -20,
+						},
+				data : [ {
+					indexLabelLineColor: "black",
+					indexLabelFontColor: "black",
+					type : "area",
+					showInLegend : true,
+					dataPoints : dps
+				} ]
+			});
+
+			chart.render();  //to display chart
+
+			if ($.browser.msie && $.browser.version == "8.0") {
+				G_vmlCanvasManager.initElement(el);
+			}
+
+
+		}
+
+
+}
+function getMemChart(){
+
+		var xhr = new XMLHttpRequest();
+		var uri = "http://localhost:8080/memory";
+
+
+		xhr.open("GET", uri, true);
+		xhr.setRequestHeader("Accept", "application/json");
+		xhr.send();
+
+		xhr.onreadystatechange = function() {
+			if (xhr.readyState == 4 && xhr.status == 200) {
+				showMemChart(xhr);
+			}
+		}
+}
+function showMemChart(xhr) {
+		if (xhr.readyState == 4 && xhr.status == 200) {
+
+			var jsonObjstr = xhr.responseText;
+			var jsonObj = JSON.parse(jsonObjstr);
+
+			console.log(jsonObjstr)
+
+
+			var dps = [];
+
+			for ( var i = 0; i < jsonObj.length; i++) {
+				dps.push({
+
+						y: jsonObjstr[i].Average,
+					//y : jsonObj[i].Average,
+					label: jsonObj[i].Timestamp,
+					legendText : "InstanceID: "+jsonObj[i].InstanceId,
+					indexLabelFontSize: 12,
+					indexLabel : "InstID: "+jsonObj[i].InstanceId,
+
+				});
+			}
+
+			var chart = new CanvasJS.Chart("chartContainer", {
+				title : {
+					text : "Memory usage",
+
+				},
+				legend : {
+				    fontColor: "black",
+
+				 },
+
+				data : [ {
+					indexLabelLineColor: "black",
+					indexLabelFontColor: "black",
+					type : "pie",
+					showInLegend : true,
+					dataPoints : dps
+				} ]
+			});
+
+
+			chart.render();  //to display chart
+
+
+		}
+
+}
+
+function getNetInp(){
+
+	var xhr = new XMLHttpRequest();
+		var uri = "http://localhost:8080/netwrkinput";
+
+
+		xhr.open("GET", uri, true);
+		xhr.setRequestHeader("Accept", "application/json");
+		xhr.send();
+
+		xhr.onreadystatechange = function() {
+			if (xhr.readyState == 4 && xhr.status == 200) {
+				showNetInpChart(xhr);
+			}
+		}
+
+}
+
+function showNetInpChart(xhr){
+
+	if (xhr.readyState == 4 && xhr.status == 200) {
+
+	var jsonObjstr = xhr.responseText;
+	var jsonObj = JSON.parse(jsonObjstr);
+
+	console.log(jsonObjstr)
+
+	var dps = [];
+
+			for ( var i = 0; i < jsonObj.length; i++) {
+				dps.push({
+					axisX:{
+						x : jsonObj[i].Datapoints[0].Timestamp,
+
+					},
+
+					y : jsonObj[i].Datapoints[0].Average,
+					label: jsonObj[i].Datapoints[0].Timestamp,
+					legendText : "InstanceID: "+jsonObj[i].InstanceId,
+					indexLabelFontSize: 12,
+					indexLabel : "InstID: "+jsonObj[i].InstanceId
+
+				});
+			}
+
+			var chart = new CanvasJS.Chart("chartContainer", {
+				title : {
+					text : "Network Input",
+
+				},
+				legend : {
+				    fontColor: "black",
+
+				 },
+				 axisX:{
+						title: "time",
+						gridThickness: 2,
+						interval:1,
+						intervalType: "hour",
+						labelAngle: -20,
+						},
+				data : [ {
+					indexLabelLineColor: "black",
+					indexLabelFontColor: "black",
+					type : "doughnut",
+					showInLegend : true,
+					dataPoints : dps
+				} ]
+			});
+
+			chart.render();  //to display chart
+
+	}
+}
+</script>
+</head>
+<body>
+
+	<div id="buttons" align="center">
+		<button
+			style="font-size: 14px; font-family: HARNGTON; font-weight: bold;"
+			onclick=getCPUChart() id="btn1" class="button">CPU Chart</button>
+
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	<!--	<button
+			style="font-size: 14px; font-family: HARNGTON; font-weight: bold;"
+			onclick=getMemChart() id="btn4" class="button">Memory Chart</button>
+
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp -->
+		<button
+			style="font-size: 14px; font-family: HARNGTON; font-weight: bold;"
+			onclick=getNetInp() id="btn3" class="button">Network Input Chart</button>
+
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+	</div>
+	<div id="chartContainer" style="margin-left: 20 margin-top: 400 height: 600px; width: 100%;"></div>
+
+
+</body>
+</html>
